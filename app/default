@@ -1,0 +1,31 @@
+server {
+	listen   80 default_server; ## listen for ipv4; this line is default and implied
+
+	root /var/www/joomla-cms;
+	index index.php index.html index.htm;
+
+	server_name localhost;
+
+	location / {
+        try_files $uri $uri/ /index.php$is_args$args;
+	}
+
+	location /doc/ {
+		alias /usr/share/doc/;
+		autoindex on;
+		allow 127.0.0.1;
+		deny all;
+	}
+
+	location ~ "\.php(\/|$)" {
+		try_files $uri =404;
+		fastcgi_pass unix:/run/php/php7.3-fpm.sock;
+		fastcgi_index index.php;
+		include fastcgi_params;
+		fastcgi_param SCRIPT_FILENAME $request_filename;
+	}
+
+	location ~ /\.ht {
+		deny all;
+	}
+}

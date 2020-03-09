@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# Set environment variables for dev
+APP_HOST=$(ip route get 8.8.4.4 | head -1 | awk '{print $7}')
+APP_ENV=${APP_ENV:-local}
+
+export APP_HOST
+export APP_ENV
+
+if [[ $# -gt 0 ]]; then
+    docker-compose "$@"
+else
+    docker-compose ps
+fi
