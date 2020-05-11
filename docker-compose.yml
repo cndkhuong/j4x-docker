@@ -2,37 +2,45 @@ version : "3.3"
 
 services:
     app  :
+        env_file:
+            - .env
         build      :
             context   : ./app/
             dockerfile: Dockerfile
-        image      : "application2000/app:0.1.0"
+            args:
+                USER_ID: ${USER_ID}
+                GROUP_ID: ${GROUP_ID}
+             
+        image      : "application2000/app:${APP_VERSION:-0.2.0}"
         restart    : always
-        env_file   :
-            - .env
         environment:
             APP_ENV : "${APP_ENV}"
             APP_HOST: "${APP_HOST}"
         ports      :
             - "127.0.0.1:${APP_PORT:-80}:80/tcp"
         volumes    :
-            - "${PROJECT_ROOT}:/var/www/joomla-cms"
+            - "${PROJECT_ROOT:-./www/public_html}:/var/www/joomla-cms"
         depends_on :
             - db
             - cache
     db   :
-        image      : "mysql:8.0.19"
+        env_file:
+            - .env
+        image      : "mysql:${DB_VERSION:-5.7}"
         ports:
              - "127.0.0.1:${DB_PORT:-3306}:3306/tcp"
              - "127.0.0.1:${XDB_PORT:-33060}:33060/tcp"
-        command    : --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_0900_ai_ci
+        command    : --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
         restart    : always
         environment:
-            MYSQL_ROOT_PASSWORD: "pass_j4x"
-            MYSQL_DATABASE: "bdd_j4x"
+            MYSQL_ROOT_PASSWORD: "${DB_ROOT_PASS:-pass_j4x}"
+            MYSQL_DATABASE: "${DB_NAME:-bdd_j4x}"
         volumes    :
             - dbvolume:/var/lib/mysql
     cache:
-        image   : "redis:5.0.7"
+        env_file:
+            - .env
+        image   : "redis:${CACHE_VERSION}"
         restart : always
         volumes :
             - cachevolume:/data

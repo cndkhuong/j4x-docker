@@ -1,6 +1,6 @@
 FROM ubuntu:bionic
 
-MAINTAINER 'Alexandre ELISÉ @mralexandrelise'
+LABEL name 'Alexandre ELISÉ @mralexandrelise'
 
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -31,6 +31,14 @@ ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 RUN chmod 777 /tmp && npm set unsafe-perm true && npm -g install npm@lts
+ARG USER_ID
+ARG GROUP_ID
+
+RUN groupadd -f -g $GROUP_ID j4x
+RUN useradd -u $USER_ID -g $GROUP_ID j4x
+
+USER j4x
+
 ADD start.sh start.sh
 ADD default /etc/nginx/sites-enabled/default
 ADD supervisord.conf /etc/supervisor/conf.d/supervisord.conf

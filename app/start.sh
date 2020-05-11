@@ -25,12 +25,12 @@ then
 fi;
 
 # execute required tasks for joomla installation if project directory exist
-if [ -d /var/www/joomla-cms ] && [ ! -f /var/www/joomla-cms/composer.lock ];
+if [ -d /var/www/joomla-cms ];
 then
-  chown -R www-data:www-data /var/www/joomla-cms \
+  chown -R j4x:j4x /var/www/joomla-cms \
   && composer install --ignore-platform-reqs \
   && npm ci \
-  && chown -R www-data:www-data /var/www/joomla-cms
+  && chown -R j4x:j4x /var/www/joomla-cms
 fi;
 
 service supervisor start
